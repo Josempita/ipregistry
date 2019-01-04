@@ -21,7 +21,7 @@ func main() {
 	fmt.Printf("broadcasting IP address via MQ: %s\n", ip)
 
 	//connect to rabbitmq
-	conn, err := amqp.Dial("amqp://alchemy_apache:Password1@crdc-001uatcbe1:5672/")
+	conn, err := amqp.Dial("amqp://username:###@crdc-001uatcbe1:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
