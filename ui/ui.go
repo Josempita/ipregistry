@@ -68,6 +68,7 @@ func Start(cfg Config, m *model.Model) {
 	handler := websocket.Handler(Echo)
 	router.GET("/", DisplayRadioButtons(m))
 	router.GET("/clients", GetClusterClients(m))
+	router.GET("/clearClients", ClearClients(m))
 	router.GET("/ws", EchoPageHandler)
 	router.GET("/socket", EchoHandler(&handler))
 	router.Run(cfg.Host + ":" + cfg.Port)
@@ -137,7 +138,7 @@ func GetClusterClients(m *model.Model) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func GetClearClients(m *model.Model) gin.HandlerFunc {
+func ClearClients(m *model.Model) gin.HandlerFunc {
 	// Display some radio buttons to the user
 	fn := func(c *gin.Context) {
 		clients = map[string]string{}

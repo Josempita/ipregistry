@@ -15,7 +15,7 @@
         
    
     $(document).ready(function() {
-           var wsuri = "ws://localhost:4000/socket";
+           var wsuri = "ws://10.9.220.108:4000/socket";
             console.log("onload");
 
             sock = new WebSocket(wsuri);
@@ -55,6 +55,7 @@
 </script>
 <body>
   <div class="container">   
+    <div id="details"><p>json rest call: /clients /clearClients</p></div>
     <div id="console">...</div>
  </div>
 </body>
