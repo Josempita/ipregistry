@@ -1,4 +1,4 @@
-package main
+package registry
 
 import (
 	"encoding/json"
@@ -6,22 +6,18 @@ import (
 	"log"
 	"net"
 
+	"github.com/Josempita/ipregistry/model"
 	"github.com/streadway/amqp"
 )
 
-type Details struct {
-	Name    string `json:"name"`
-	Address string `json:"address"`
-}
-
-func main() {
+func Start(messager chan model.Details) {
 
 	fmt.Printf("broadcasting IP address via MQ: %s\n", "rabitMQ")
 	ip := GetOutboundIP()
 	fmt.Printf("broadcasting IP address via MQ: %s\n", ip)
 
 	//connect to rabbitmq
-	conn, err := amqp.Dial("amqp://username:###@crdc-001uatcbe1:5672/")
+	conn, err := amqp.Dial("amqp://alchemy_apache:Password1@crdc-001uatcbe1:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -59,18 +55,20 @@ func main() {
 	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
-			var details Details
+			var details model.Details
 			err := json.Unmarshal([]byte(d.Body), &details)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			log.Printf("Message details %s", details)
+			messager <- details
 		}
 	}()
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
+	log.Printf("Exit")
 }
 
 func failOnError(err error, msg string) {

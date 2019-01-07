@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	"github.com/streadway/amqp"
@@ -23,7 +24,7 @@ func main() {
 	fmt.Printf("broadcasting IP address via MQ: %s\n", ip)
 
 	//connect to rabbitmq
-	conn, err := amqp.Dial("amqp://username:###@crdc-001uatcbe1:5672/")
+	conn, err := amqp.Dial("amqp://alchemy_apache:Password1@crdc-001uatcbe1:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -42,7 +43,7 @@ func main() {
 	failOnError(err, "Failed to declare a queue")
 
 	for {
-		client := clientDetails{Name: "cluster1", Address: ip.String()}
+		client := clientDetails{Name: GetClientName(), Address: ip.String()}
 		body, err := json.Marshal(client)
 		if err != nil {
 			fmt.Println(err)
@@ -57,6 +58,7 @@ func main() {
 				ContentType: "text/plain",
 				Body:        []byte(string(body)),
 			})
+		fmt.Printf("broadcasting IP address via MQ: %s\n", ip.String())
 		failOnError(err, "Failed to publish a message")
 		time.Sleep(30 * time.Second)
 	}
@@ -64,32 +66,9 @@ func main() {
 	log.Printf("Starting consumer")
 
 	//consume message
-	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
-	)
+
 	failOnError(err, "Failed to register a consumer")
 	log.Printf("Displaying messages")
-
-	for d := range msgs {
-		log.Printf("Received a message: %s", d.Body)
-	}
-
-	forever := make(chan bool)
-
-	go func() {
-		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-		}
-	}()
-
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	<-forever
 }
 
 func failOnError(err error, msg string) {
@@ -109,4 +88,18 @@ func GetOutboundIP() net.IP {
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
 
 	return localAddr.IP
+}
+
+func GetClientName() string {
+	count := len(os.Args[1:])
+	var arg string
+	if count == 0 {
+		arg = "clientUnkown"
+	} else {
+		arg = os.Args[1]
+		if arg != "" {
+			arg = arg
+		}
+	}
+	return arg
 }

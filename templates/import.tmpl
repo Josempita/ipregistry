@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+ <link rel="stylesheet" href="/css/main.css">
+<title>{{.PageTitle}}</title>
+</head>
+
+<script type='text/javascript'>
+     
+              var sock = null;
+         
+        
+        
+   
+    $(document).ready(function() {
+           var wsuri = "ws://localhost:4000/socket";
+            console.log("onload");
+
+            sock = new WebSocket(wsuri);
+
+            sock.onopen = function() {
+                console.log("connected to " + wsuri);
+            }
+
+            sock.onclose = function(e) {
+                console.log("connection closed (" + e.code + ")");
+            }
+
+            sock.onmessage = function(e) {
+                console.log("message received: " + e.data);
+                document.getElementById("console").innerHTML = e.data;
+            }
+        $('#updateCurve').click(function(){
+                $('#loader').show();
+               $('#mainform').get(0).setAttribute('action', '/selected');
+               
+            
+            $('form').submit();
+            
+        });   
+       
+        $('#updateMultiCurve').click(function(){
+                $('#loader').show();
+                  $('#mainform').get(0).setAttribute('action', '/multiselect');
+               
+            
+            $('form').submit();
+          
+            
+        });   
+    });
+   
+</script>
+<body>
+  <div class="container">   
+    <div id="console">...</div>
+ </div>
+</body>
+</html>

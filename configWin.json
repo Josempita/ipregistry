@@ -1,0 +1,6 @@
+{
+    "templates": "c:/workspace/go/src/github.com/Josempita/ipregistry/templates/*",
+    "root": "c:/workspace/go/src/github.com/Josempita/ipregistry/",
+    "password": "Password1",
+    "username": "alchemy_apache"
+}
